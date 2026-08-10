@@ -10,7 +10,7 @@ easydict==1.13
 
 # --- document / image handling -------------------------------------------
 pymupdf==1.24.13
-pillow==11.0.0
+pillow==10.4.0
 
 # --- embeddings (ONNX, does NOT touch transformers) ----------------------
 # Deliberately NOT sentence-transformers: it forces transformers 5.x and
