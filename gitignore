@@ -1,0 +1,13 @@
+# Secrets -- never commit
+.env
+
+# Model weights (7.5 GB, pulled from HF on first run)
+models/
+
+# Documents and OCR output
+data/
+
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store

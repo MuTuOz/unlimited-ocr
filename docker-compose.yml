@@ -1,0 +1,26 @@
+services:
+  # GPU phase. Run once per document, then stop it.
+  ocr:
+    build: .
+    image: ocr-rag
+    volumes:
+      - ./models:/models
+      - ./data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--help"]
+
+  # CPU phase. No GPU reservation, so it runs anywhere.
+  rag:
+    build: .
+    image: ocr-rag
+    volumes:
+      - ./models:/models
+      - ./data:/data
+    env_file: .env
+    command: ["--help"]
