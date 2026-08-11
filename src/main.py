@@ -85,7 +85,7 @@ def cmd_ocr(args: argparse.Namespace) -> int:
             dpi=args.dpi,
             base_size=args.base_size,
             image_size=args.image_size,
-            crop_mode=not args.no_crop,
+            crop_mode=args.crop,
             max_length=args.max_length,
         )
     )
@@ -157,7 +157,7 @@ def build_parser() -> argparse.ArgumentParser:
     o.add_argument("--base-size", type=int, default=1024)
     o.add_argument("--image-size", type=int, default=1024)
     o.add_argument("--max-length", type=int, default=8192)
-    o.add_argument("--no-crop", action="store_true")
+    o.add_argument("--crop", action="store_true", help="tile the image (uses much more VRAM)")
     o.add_argument("--no-resume", action="store_true", help="redo finished pages")
     o.set_defaults(func=cmd_ocr)
 
