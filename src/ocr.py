@@ -79,9 +79,20 @@ class OcrEngine:
                 "per page. Did you pass --gpus all to docker run?"
             )
 
-        # float16 on purpose: T4 (Turing) has no hardware bfloat16, so bf16 is
-        # emulated and slower. On A100/H100 you can switch this to bfloat16.
-        dtype = torch.float16 if self.device == "cuda" else torch.float32
+        # bfloat16, not float16. The remote code produces float32 tensors in
+        # the vision path and masked_scatter_ refuses to mix Half with Float;
+        # bfloat16 does not hit that error. On a T4 bf16 is emulated and
+        # therefore slower, but "slower" beats "crashes". Override with
+        # OCR_DTYPE=float16 or float32 if a future card makes that worthwhile.
+        dtypes = {
+            "bfloat16": torch.bfloat16,
+            "float16": torch.float16,
+            "float32": torch.float32,
+        }
+        if self.device == "cuda":
+            dtype = dtypes[os.environ.get("OCR_DTYPE", "bfloat16")]
+        else:
+            dtype = torch.float32
 
         log.info("Loading %s onto %s (%s)", MODEL_NAME, self.device, dtype)
         self.tokenizer = AutoTokenizer.from_pretrained(
