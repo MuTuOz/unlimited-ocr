@@ -42,18 +42,21 @@ TEXT_SUFFIXES = (".md", ".mmd", ".txt")
 
 @dataclass
 class OcrSettings:
-    """Tuned for dense forms and tables.
+    """Defaults mirror the configuration that works on this PDF.
 
-    image_size 640 with no_repeat_ngram_size=35 produced half-empty tables and
-    garbled words ("A bevground Piping" for "Aboveground Piping"). 1024 with no
-    n-gram penalty is the setting that reads filled forms correctly -- repeated
-    cells like "PROJECT." are legitimate in a form and must not be suppressed.
+    crop_mode is OFF. With crop_mode=True the model tiles the source image,
+    and a 300 DPI page (~2480x3508) produces enough tiles that activations
+    push past 15 GB of VRAM on a T4. image_size does NOT control the tile
+    count -- turning crop_mode off is what bounds the memory.
+
+    Pass --crop only for single images that are
+    already small, where tiling buys detail on dense tables.
     """
 
     dpi: int = 300
     base_size: int = 1024
     image_size: int = 1024
-    crop_mode: bool = True
+    crop_mode: bool = False
     max_length: int = 8192
     prompt: str = "<image>document parsing."
     render_batch: int = 25
